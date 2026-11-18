@@ -11,7 +11,7 @@ export class Strategy {
     if(warmup)return null;
     if(qty>0n){
       this.peak=Math.max(this.peak,price);
-      if(price<this.peak*.994||(this.fast<this.slow&&price<this.slow)){
+      if(price<this.peak*.991||(this.fast<this.slow&&price<this.slow)){
         this.cooldown=20;
         return {side:'sell',symbol:'CBBTC',qty,max_slippage_bps:150};
       }
@@ -19,9 +19,9 @@ export class Strategy {
     }
     this.peak=price;
     if(this.cooldown>0){this.cooldown--;return null;}
-    if(this.history.length<61)return null;
-    const momentum=price/this.history.at(-61)-1;
-    if(momentum>.003&&this.fast>this.slow*1.0005&&price>this.fast){
+    if(this.history.length<31)return null;
+    const momentum=price/this.history.at(-31)-1;
+    if(momentum>.004&&this.fast>this.slow*1.0005&&price>this.fast){
       const desired=cash*3n/4n, limit=depth/2000n;
       const amount=desired<limit?desired:limit;
       if(amount>=1000000n)return {side:'buy',symbol:'CBBTC',notional_quote_units:amount,max_slippage_bps:100};
