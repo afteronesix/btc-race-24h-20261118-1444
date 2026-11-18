@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {Strategy} from './main.ts';
+const collect=ps=>{const b=new Strategy();return ps.map(p=>b.step(p,1000000000n,0n,1000000000000n));};
+assert(collect(Array(100).fill(100000)).every(x=>!x));
+assert(collect(Array.from({length:100},(_,i)=>100000-i*10)).every(x=>!x));
+const rising=Array.from({length:100},(_,i)=>100000+i*20);
+const buy=collect(rising).find(Boolean);assert.equal(buy.side,'buy');assert(buy.notional_quote_units<=1000000000n);
+assert.deepEqual(collect(rising),collect(rising));
+const b=new Strategy();for(const p of rising)assert(!b.step(p,1000000000n,0n,1000000000000n,true));
+b.step(102000,0n,500n,1000000000000n);const sell=b.step(100000,0n,500n,1000000000000n);assert.equal(sell.side,'sell');assert.equal(sell.qty,500n);
+console.log('PASS flat/down, cash bound, determinism, warmup, protective exit');
